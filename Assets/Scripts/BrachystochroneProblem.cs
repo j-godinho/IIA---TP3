@@ -35,6 +35,7 @@ public class BrachystochroneProblem {
 		FitnessInfo eval = new FitnessInfo ();
 		eval.time = 0;
 		eval.pointsCleared = 0;
+		float ParTime = 0;
 
 		List<float> pointsX = new List<float> (trackpoints.Keys);
 		pointsX.Sort ();
@@ -48,24 +49,31 @@ public class BrachystochroneProblem {
 
 			float dX = pointB-pointA;
 			float dY = trackpoints[pointB]-trackpoints[pointA];
+			float l = Mathf.Sqrt (dX*dX + dY*dY);
 
-			float ParTime=(-velocity+Mathf.Sqrt(Mathf.Pow(-velocity,2)+2*info.g*dX))/((info.g*dX)/Mathf.Sqrt(Mathf.Pow(dX,2)+Mathf.Pow(dY,2)));
+			if (dY != 0) {
+				ParTime = (-velocity + Mathf.Sqrt (velocity*velocity + 2 * info.g * dY)) / ((info.g * dY) / l);
+			} else {
+				ParTime = l / velocity;
+			}
 
-			pointA=pointB;
-			velocity=(info.g*dY)/(Mathf.Sqrt(Mathf.Pow(dX,2)+Mathf.Pow(dY,2)))*ParTime+velocity;
+			if (ParTime <= 0) {
+				eval.time=Mathf.Infinity;
+				return eval;
+			}
+
+			velocity += (info.g*dY) / l * ParTime;
 			if(velocity<0) {
 				eval.time=Mathf.Infinity;
 				return eval;
 			}
 
+			pointA=pointB;
 			eval.time+=ParTime;
 			eval.pointsCleared++;
 			eval.distanceTraveled+=dX;
-
-
 		}
 
 		return eval;
 	}
-
 }

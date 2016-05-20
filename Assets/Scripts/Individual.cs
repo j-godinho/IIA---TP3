@@ -36,6 +36,18 @@ public abstract class Individual {
 
 	}
 
+	public override string ToString ()
+	{
+		List<float> result = new List<float> ();
+
+		foreach (KeyValuePair<float, float> point in trackPoints) {
+			result.Add (point.Key);
+			result.Add (point.Value);
+		}
+
+		return "[Individual] track points: [" + string.Join (",", result.ConvertAll<string> (f => f.ToString()).ToArray()) + "]";
+	}
+
 
 
 

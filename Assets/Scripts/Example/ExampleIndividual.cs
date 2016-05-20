@@ -51,10 +51,13 @@ public class ExampleIndividual : Individual {
 
 
 	void RandomInitialization() {
+		float step = (info.endPointX - info.startPointX ) / (info.numTrackPoints - 1);
+		float y = 0;
+
 		trackPoints.Add (info.startPointX, info.startPointY);//startpoint
-		for(float x = MinX+1; x<=MaxX-1; x+=(MaxX-MinX)/(info.numTrackPoints-1)) {
-			float y = UnityEngine.Random.Range(MinY,MaxY);
-			trackPoints.Add(x,y);
+		for(int i = 1; i < info.numTrackPoints - 1; i++) {
+			y = UnityEngine.Random.Range(MinY, MaxY);
+			trackPoints.Add(info.startPointX + i * step, y);
 		}
 		trackPoints.Add (info.endPointX, info.endPointY); //endpoint
 	}
