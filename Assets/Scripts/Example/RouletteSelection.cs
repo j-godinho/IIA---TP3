@@ -15,6 +15,7 @@ public class RouletteSelection: SelectionMethod {
 	}
 
 
+
 	List<Individual> rouletteSelection(List<Individual>oldpop, int num) {
 		float sum = 0;
 		float probabilitySum = 0;
@@ -23,26 +24,25 @@ public class RouletteSelection: SelectionMethod {
 		List<Individual> selectedInds = new List<Individual> ();
 
 		for (int i = 0; i < num; i++) {
-			sum += oldpop [i].fitness;
+			sum += oldpop[i].fitness;
 		}
 
 		float [] probability = new float [num];
 		for (int i = 0; i < num; i++) {
-			probability[i] = probabilitySum + (oldpop [i].fitness / sum);
+			probability[i] = probabilitySum + (oldpop[i].fitness / sum);
 			probabilitySum += probability[i];
 		}
 			
 
 		for(int i = 0;i<num;i++)
 		{
-			float number = Random.Range (0, 1);
+			float number = Random.Range (0f, 1f);
 			for (int j = 0; j < num; j++) {
 				if (number > probability [j] ) {
 					selectedInds.Add (oldpop[j].Clone());
 				}
 			}
 		}
-			
 			
 		return selectedInds;
 	}
