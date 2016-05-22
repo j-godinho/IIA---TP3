@@ -23,9 +23,9 @@ public class TournamentSelection : SelectionMethod {
 		for (int i = 0; i<num; i++) {
 			//make sure selected individuals are different
 			Individual ind = selectIndividual(oldpop, popsize);
-			/*while (selectedInds.Contains(ind)) {
+			while (selectedInds.Contains(ind)) {
 				ind = selectIndividual(oldpop, popsize);
-			}*/
+			}
 			selectedInds.Add (ind.Clone()); //we return copys of the selected individuals
 		}
 
