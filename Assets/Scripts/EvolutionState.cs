@@ -46,7 +46,7 @@ public class EvolutionState : MonoBehaviour {
 		info.startVelocity = startVelocity;
 		info.numTrackPoints = numTrackPoints;
 
-		randomSelection = new RandomSelection (); //change accordingly
+		randomSelection = new TournamentSelection (); //change accordingly
 		stats = new StatisticsLogger (statsFilename);
 
 		drawer = new PolygonGenerator ();
@@ -57,7 +57,7 @@ public class EvolutionState : MonoBehaviour {
 		evolving = true;
 		drawing = false;
 	}
-	
+
 
 	void FixedUpdate () {
 		if (evolving) {
@@ -72,33 +72,33 @@ public class EvolutionState : MonoBehaviour {
 	void EvolStep() {
 		//do for a given number of generations
 		if (currentGeneration < numGenerations) {
-			
+
 			//if there are individuals to evaluate on the current generation
 			int evalsThisStep = EvaluationsPerStep < (populationSize - evaluatedIndividuals) ? EvaluationsPerStep : (populationSize - evaluatedIndividuals);
 			for (int ind = evaluatedIndividuals; ind<evaluatedIndividuals+evalsThisStep; ind++) {
 				population[ind].evaluate();
 			}
 			evaluatedIndividuals += evalsThisStep;
-			
+
 			//if all individuals have been evaluated on the current generation, breed a new population
 			if(evaluatedIndividuals==populationSize) {
 				stats.PostGenLog(population,currentGeneration);
-				
+
 				population = BreedPopulation();
 				evaluatedIndividuals=0;
 				currentGeneration++;
 			}
-			
+
 		} else {
 			stats.finalLog();
 			evolving=false;
 			drawing = true;
 			print ("evolution stopped");
 		}
-		
-		
 
-	
+
+
+
 	}
 
 
@@ -115,7 +115,7 @@ public class EvolutionState : MonoBehaviour {
 	List<Individual> BreedPopulation() {
 		List<Individual> newpop = new List<Individual>();
 
-		//breed individuals and place them on new population. We'll apply crossover and mutation later 
+		//breed individuals and place them on new population. We'll apply crossover and mutation later
 		while(newpop.Count<populationSize) {
 			List<Individual> selectedInds = randomSelection.selectIndividuals(population,2); //we should propably always select pairs of individuals
 			for(int i =0; i< selectedInds.Count;i++) {
@@ -123,7 +123,7 @@ public class EvolutionState : MonoBehaviour {
 					newpop.Add(selectedInds[i]); //added individuals are already copys, so we can apply crossover and mutation directly
 				}
 				else{ //discard any excess individuals
-					selectedInds.RemoveAt(i);	
+					selectedInds.RemoveAt(i);
 				}
 			}
 
@@ -144,5 +144,3 @@ public class EvolutionState : MonoBehaviour {
 	}
 
 }
-
-
