@@ -11,6 +11,9 @@ public class EvolutionState : MonoBehaviour {
 	public float g;
 	public float startVelocity;
 	public int numTrackPoints;
+	public int selectionMethod;
+
+
 	private ProblemInfo info;
 
 
@@ -20,7 +23,7 @@ public class EvolutionState : MonoBehaviour {
 	public float crossoverProbability;
 
 	private List<Individual> population;
-	private SelectionMethod randomSelection;
+	private SelectionMethod selection;
 
 	private int evaluatedIndividuals;
 	private int currentGeneration;
@@ -47,9 +50,11 @@ public class EvolutionState : MonoBehaviour {
 		info.numTrackPoints = numTrackPoints;
 
 
-		randomSelection = new TournamentSelection (); //change accordingly
-
-		//randomSelection = new RouletteSelection (); //change accordingly
+		if (selectionMethod == 0) {
+			selection = new TournamentSelection ();
+		} else if (selectionMethod == 1) {
+			selection = new RouletteSelection ();
+		}
 
 		stats = new StatisticsLogger (statsFilename);
 
@@ -121,7 +126,7 @@ public class EvolutionState : MonoBehaviour {
 
 		//breed individuals and place them on new population. We'll apply crossover and mutation later
 		while(newpop.Count<populationSize) {
-			List<Individual> selectedInds = randomSelection.selectIndividuals(population,2); //we should propably always select pairs of individuals
+			List<Individual> selectedInds = selection.selectIndividuals(population,2); //we should propably always select pairs of individuals
 			for(int i =0; i< selectedInds.Count;i++) {
 				if(newpop.Count<populationSize) {
 					newpop.Add(selectedInds[i]); //added individuals are already copys, so we can apply crossover and mutation directly
