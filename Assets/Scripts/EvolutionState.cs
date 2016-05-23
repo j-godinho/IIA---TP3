@@ -47,9 +47,9 @@ public class EvolutionState : MonoBehaviour {
 		info.numTrackPoints = numTrackPoints;
 
 
-		//randomSelection = new TournamentSelection (); //change accordingly
+		randomSelection = new TournamentSelection (); //change accordingly
 
-		randomSelection = new RouletteSelection (); //change accordingly
+		//randomSelection = new RouletteSelection (); //change accordingly
 
 		stats = new StatisticsLogger (statsFilename);
 
