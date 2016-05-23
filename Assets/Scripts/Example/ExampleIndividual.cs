@@ -11,6 +11,7 @@ public class ExampleIndividual : Individual {
 	private float MinY;
 	private float MaxY;
 
+
 	public ExampleIndividual(ProblemInfo info) : base(info) {
 
 		MinX = info.startPointX;
@@ -28,8 +29,9 @@ public class ExampleIndividual : Individual {
 		NewValueMutation (probability);
 	}
 
-	public override void Crossover(Individual partner, float probability) {
-		HalfCrossover (partner, probability);
+	public override void Crossover(Individual partner, float probability, float n) {
+		//HalfCrossover (partner, probability);
+		NCrossover(partner, probability, n);
 	}
 
 	public override void CalcTrackPoints() {
@@ -75,6 +77,26 @@ public class ExampleIndividual : Individual {
 		}
 	}
 
+
+	void NCrossover(Individual partner, float probability, float n) {
+
+		if (UnityEngine.Random.Range (0f, 1f) > probability) {
+			return;
+		}
+		//this example always splits the chromosome in half
+		int crossoverPoint = Mathf.FloorToInt (info.numTrackPoints / n);
+		List<float> keys = new List<float>(trackPoints.Keys);
+		for (int i=0; i<crossoverPoint; i++) {
+			float tmp = trackPoints[keys[i]];
+			trackPoints[keys[i]] = partner.trackPoints[keys[i]];
+			partner.trackPoints[keys[i]]=tmp;
+		}
+
+	}
+
+
+
+
 	void HalfCrossover(Individual partner, float probability) {
 
 		if (UnityEngine.Random.Range (0f, 1f) > probability) {
@@ -88,7 +110,7 @@ public class ExampleIndividual : Individual {
 			trackPoints[keys[i]] = partner.trackPoints[keys[i]];
 			partner.trackPoints[keys[i]]=tmp;
 		}
-
+		 
 	}
 
 

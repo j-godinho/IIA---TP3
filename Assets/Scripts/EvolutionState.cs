@@ -13,6 +13,7 @@ public class EvolutionState : MonoBehaviour {
 	public int numTrackPoints;
 	public int selectionMethod;
 	public int tournamentSize;
+	public int nCrossings;
 
 	private ProblemInfo info;
 
@@ -144,7 +145,7 @@ public class EvolutionState : MonoBehaviour {
 
 			//apply crossover between pairs of individuals and mutation to each one
 			while(selectedInds.Count>1) {
-				selectedInds[0].Crossover(selectedInds[1],crossoverProbability);
+				selectedInds[0].Crossover(selectedInds[1],crossoverProbability, nCrossings);
 				selectedInds[0].Mutate(mutationProbability);
 				selectedInds[1].Mutate(mutationProbability);
 				selectedInds.RemoveRange(0,2);
@@ -154,6 +155,8 @@ public class EvolutionState : MonoBehaviour {
 				selectedInds.RemoveAt(0);
 			}
 		}
+
+
 
 		return newpop;
 	}
