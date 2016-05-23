@@ -34,6 +34,7 @@ public class EvolutionState : MonoBehaviour {
 
 	private PolygonGenerator drawer;
 
+	public int unchangedNumber;
 
 	bool evolving;
 	bool drawing;
@@ -50,7 +51,7 @@ public class EvolutionState : MonoBehaviour {
 		info.numTrackPoints = numTrackPoints;
 
 		if (selectionMethod == 0) {
-			selection = new TournamentSelection (tournamentSize); 
+			selection = new TournamentSelection (tournamentSize);
 		} else if (selectionMethod == 1) {
 			selection = new RouletteSelection ();
 		}
@@ -122,6 +123,12 @@ public class EvolutionState : MonoBehaviour {
 
 	List<Individual> BreedPopulation() {
 		List<Individual> newpop = new List<Individual>();
+
+		population.Sort((x, y) => x.fitness.CompareTo(y.fitness));
+		for(int i = 0; i < unchangedNumber; i++){
+			newpop.Add(population[i].Clone());
+		}
+
 
 		//breed individuals and place them on new population. We'll apply crossover and mutation later
 		while(newpop.Count<populationSize) {

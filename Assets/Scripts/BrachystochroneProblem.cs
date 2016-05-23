@@ -7,10 +7,10 @@ public struct ProblemInfo {
 	public float startPointY;
 	public float endPointX;
 	public float endPointY;
-	
+
 	public float g;
 	public float startVelocity;
-	
+
 	public int numTrackPoints;
 }
 
