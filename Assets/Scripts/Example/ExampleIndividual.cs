@@ -31,7 +31,10 @@ public class ExampleIndividual : Individual {
 
 	public override void Crossover(Individual partner, float probability, float n) {
 		//HalfCrossover (partner, probability);
-		NCrossover(partner, probability, n);
+		if (n != 0) {
+			NCrossover(partner, probability, n);
+		}
+
 	}
 
 	public override void CalcTrackPoints() {
