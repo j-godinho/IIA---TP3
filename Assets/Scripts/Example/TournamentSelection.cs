@@ -36,6 +36,7 @@ public class TournamentSelection : SelectionMethod {
 
 	Individual selectIndividual(List<Individual> population){
 		//Debug.Log("selectIndividual\n");
+
 		List<Individual> tournament = new List<Individual> ();
 		//Debug.Log(tournametSize);
 		for(int i = 0; i < tournamentSize; i++){
