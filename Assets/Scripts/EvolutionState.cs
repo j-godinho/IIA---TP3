@@ -12,7 +12,7 @@ public class EvolutionState : MonoBehaviour {
 	public float startVelocity;
 	public int numTrackPoints;
 	public int selectionMethod;
-
+	public int tournamentSize;
 
 	private ProblemInfo info;
 
@@ -50,7 +50,7 @@ public class EvolutionState : MonoBehaviour {
 		info.numTrackPoints = numTrackPoints;
 
 		if (selectionMethod == 0) {
-			selection = new TournamentSelection (); 
+			selection = new TournamentSelection (tournamentSize); 
 		} else if (selectionMethod == 1) {
 			selection = new RouletteSelection ();
 		}

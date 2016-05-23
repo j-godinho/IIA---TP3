@@ -5,8 +5,10 @@ using System.Collections.Generic;
 
 public class TournamentSelection : SelectionMethod {
 
-	public TournamentSelection(): base() {
+	int tournamentSize;
 
+	public TournamentSelection(int tournament): base() {
+		tournamentSize = tournament;
 	}
 
 
@@ -19,12 +21,12 @@ public class TournamentSelection : SelectionMethod {
 	List<Individual> tournamentSelection(List<Individual>oldpop, int num) {
 
 		List<Individual> selectedInds = new List<Individual> ();
-		int popsize = oldpop.Count;
+
 		for (int i = 0; i<num; i++) {
 			//make sure selected individuals are different
-			Individual ind = selectIndividual(oldpop, popsize);
+			Individual ind = selectIndividual(oldpop);
 			while (selectedInds.Contains(ind)) {
-				ind = selectIndividual(oldpop, popsize);
+				ind = selectIndividual(oldpop);
 			}
 			selectedInds.Add (ind.Clone()); //we return copys of the selected individuals
 		}
@@ -32,12 +34,12 @@ public class TournamentSelection : SelectionMethod {
 		return selectedInds;
 	}
 
-	Individual selectIndividual(List<Individual> population, int tournametSize){
+	Individual selectIndividual(List<Individual> population){
 		//Debug.Log("selectIndividual\n");
 		List<Individual> tournament = new List<Individual> ();
 		//Debug.Log(tournametSize);
-		for(int i = 0; i < tournametSize; i++){
-			int index = (int)(Random.Range(0, tournametSize-1));
+		for(int i = 0; i < tournamentSize; i++){
+			int index = (int)(Random.Range(0, tournamentSize-1));
 
 			tournament.Add(population[index]);
 			//Debug.Log("oi");
@@ -45,7 +47,7 @@ public class TournamentSelection : SelectionMethod {
 
 		Individual bestIndividual = tournament[0];
 		float bestFitness = bestIndividual.fitness;
-		for(int i = 1; i < tournametSize; i++){
+		for(int i = 1; i < tournamentSize; i++){
 			if(tournament[i].fitness < bestFitness){
 				bestIndividual = tournament[i];
 				bestFitness = tournament[i].fitness;
