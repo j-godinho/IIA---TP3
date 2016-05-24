@@ -25,7 +25,8 @@ public class ExampleIndividual : Individual {
 	}
 
 	public override void Mutate(float probability) {
-		NewValueMutation (probability);
+		//NewValueMutation (probability);
+		ValueMutationGaussian(probability);
 	}
 
 	public override void Crossover(Individual partner, float probability) {
@@ -65,7 +66,7 @@ public class ExampleIndividual : Individual {
 	void NewValueMutation(float probability) {
 		List<float> keys = new List<float>(trackPoints.Keys);
 		foreach (float x in keys) {
-			//make sure that the startpoint and the endpoint are not mutated 
+			//make sure that the startpoint and the endpoint are not mutated
 			if(Math.Abs (x-info.startPointX)<0.01 || Math.Abs (x-info.endPointX)<0.01) {
 				continue;
 			}
@@ -73,6 +74,55 @@ public class ExampleIndividual : Individual {
 				trackPoints[x] = UnityEngine.Random.Range(MinY,MaxY);
 			}
 		}
+	}
+
+	void ValueMutationGaussian(float probability) {
+		List<float> keys = new List<float>(trackPoints.Keys);
+		foreach (float x in keys) {
+			//make sure that the startpoint and the endpoint are not mutated
+			if(Math.Abs (x-info.startPointX)<0.01 || Math.Abs (x-info.endPointX)<0.01) {
+				continue;
+			}
+			if(UnityEngine.Random.Range (0f, 1f) < probability) {
+				float stddev = Getstddev();
+				trackPoints[x] = gaussianMutation(trackPoints[x], stddev);
+				trackPoints[x] = clamp(trackPoints[x], MinY, MaxY);
+			}
+		}
+	}
+
+	float Getstddev() {
+		float mean = (MinY + MaxY) /2;
+		float sigma = (MaxY - mean) / 3;
+		//Debug.Log("stddev: " +sigma);
+		return UnityEngine.Random.Range(mean, sigma);
+	}
+
+	float gaussianMutation(float mean, float stddev) {
+		float x1 = UnityEngine.Random.Range (0f, 1f);
+		float x2 = UnityEngine.Random.Range (0f, 1f);
+
+		if(x1 == 0){
+			x1 = 1;
+		}
+		if(x2 == 0){
+			x2 = 1;
+		}
+
+		double y1 = Math.Sqrt(-2.0 * Math.Log(x1)) * Math.Cos(2.0 * Math.PI * x2);
+		float finalValue = (float)y1 * stddev + mean;
+		return finalValue;
+	}
+
+	float clamp(float val, float min, float max)
+	{
+		if(val >= max){
+			return max;
+		}
+		if(val <= min){
+			return min;
+		}
+		return val;
 	}
 
 	void HalfCrossover(Individual partner, float probability) {
@@ -90,6 +140,74 @@ public class ExampleIndividual : Individual {
 		}
 
 	}
+
+	void NCrossover(Individual partner, float probability,int n_cortes) {
+
+        List<int> pontos_corte = new List<int>();
+        int num,aux=0;
+		if (UnityEngine.Random.Range (0f, 1f) > probability) {
+			return;
+		}
+        //this example always splits the chromosome in half
+        //int crossoverPoint = Mathf.FloorToInt (info.numTrackPoints / (n_cortes+1));
+
+        for (int i =0; i < n_cortes; i++)
+        {
+            num = UnityEngine.Random.Range(0, info.numTrackPoints);//geracao indice
+
+            for(int j = 0; j < pontos_corte.Count; j++)//garante que nao ha cortes no mesmo "indice"
+            {
+                if (pontos_corte[j] == num)
+                {
+                    aux = 1;
+                }
+            }
+
+            if (aux == 0)
+            {
+                pontos_corte.Add(num);
+            }
+
+            aux = 0;
+
+        }
+
+        List<float> keys = new List<float>(trackPoints.Keys);
+
+        Debug.Log("pai: ");
+        for (int k = 0; k < info.numTrackPoints; k++)
+        {
+            Debug.Log(partner.trackPoints[keys[k]] + "  ");
+        }
+        Debug.Log("filho: ");
+        for (int k = 0; k < info.numTrackPoints; k++)
+        {
+            Debug.Log(trackPoints[keys[k]] + "  ");
+        }
+
+        for (int j = 0; j < pontos_corte.Count; j++)
+        {
+            if (j % 2 != 0)
+            {
+                for (int i = 0; i < pontos_corte[j]; i++)
+                {
+                    float tmp = trackPoints[keys[i]];
+                    trackPoints[keys[i]] = partner.trackPoints[keys[i]];
+                    partner.trackPoints[keys[i]] = tmp;
+                }
+            }
+
+        }
+
+        Debug.Log("filhoooooo: ");
+        for (int k = 0; k < info.numTrackPoints; k++)
+        {
+            Debug.Log(partner.trackPoints[keys[k]] + "  ");
+        }
+
+        Debug.Break();
+
+    }
 
 
 }
