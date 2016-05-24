@@ -11,6 +11,7 @@ public class ExampleIndividual : Individual {
 	private float MinY;
 	private float MaxY;
 
+
 	public ExampleIndividual(ProblemInfo info) : base(info) {
 
 		MinX = info.startPointX;
@@ -29,8 +30,12 @@ public class ExampleIndividual : Individual {
 		ValueMutationGaussian(probability);
 	}
 
-	public override void Crossover(Individual partner, float probability) {
-		HalfCrossover (partner, probability);
+	public override void Crossover(Individual partner, float probability, float n) {
+		//HalfCrossover (partner, probability);
+		if (n != 0) {
+			NCrossover(partner, probability, n);
+		}
+
 	}
 
 	public override void CalcTrackPoints() {
@@ -75,6 +80,7 @@ public class ExampleIndividual : Individual {
 			}
 		}
 	}
+
 
 	void ValueMutationGaussian(float probability) {
 		List<float> keys = new List<float>(trackPoints.Keys);
@@ -125,6 +131,25 @@ public class ExampleIndividual : Individual {
 		return val;
 	}
 
+
+	void NCrossover(Individual partner, float probability, float n) {
+
+		if (UnityEngine.Random.Range (0f, 1f) > probability) {
+			return;
+		}
+		//this example always splits the chromosome in half
+		int crossoverPoint = Mathf.FloorToInt (info.numTrackPoints / n);
+		List<float> keys = new List<float>(trackPoints.Keys);
+		for (int i=0; i<crossoverPoint; i++) {
+			float tmp = trackPoints[keys[i]];
+			trackPoints[keys[i]] = partner.trackPoints[keys[i]];
+			partner.trackPoints[keys[i]]=tmp;
+		}
+
+	}
+
+
+
 	void HalfCrossover(Individual partner, float probability) {
 
 		if (UnityEngine.Random.Range (0f, 1f) > probability) {
@@ -141,73 +166,7 @@ public class ExampleIndividual : Individual {
 
 	}
 
-	void NCrossover(Individual partner, float probability,int n_cortes) {
 
-        List<int> pontos_corte = new List<int>();
-        int num,aux=0;
-		if (UnityEngine.Random.Range (0f, 1f) > probability) {
-			return;
-		}
-        //this example always splits the chromosome in half
-        //int crossoverPoint = Mathf.FloorToInt (info.numTrackPoints / (n_cortes+1));
-
-        for (int i =0; i < n_cortes; i++)
-        {
-            num = UnityEngine.Random.Range(0, info.numTrackPoints);//geracao indice
-
-            for(int j = 0; j < pontos_corte.Count; j++)//garante que nao ha cortes no mesmo "indice"
-            {
-                if (pontos_corte[j] == num)
-                {
-                    aux = 1;
-                }
-            }
-
-            if (aux == 0)
-            {
-                pontos_corte.Add(num);
-            }
-
-            aux = 0;
-
-        }
-
-        List<float> keys = new List<float>(trackPoints.Keys);
-
-        Debug.Log("pai: ");
-        for (int k = 0; k < info.numTrackPoints; k++)
-        {
-            Debug.Log(partner.trackPoints[keys[k]] + "  ");
-        }
-        Debug.Log("filho: ");
-        for (int k = 0; k < info.numTrackPoints; k++)
-        {
-            Debug.Log(trackPoints[keys[k]] + "  ");
-        }
-
-        for (int j = 0; j < pontos_corte.Count; j++)
-        {
-            if (j % 2 != 0)
-            {
-                for (int i = 0; i < pontos_corte[j]; i++)
-                {
-                    float tmp = trackPoints[keys[i]];
-                    trackPoints[keys[i]] = partner.trackPoints[keys[i]];
-                    partner.trackPoints[keys[i]] = tmp;
-                }
-            }
-
-        }
-
-        Debug.Log("filhoooooo: ");
-        for (int k = 0; k < info.numTrackPoints; k++)
-        {
-            Debug.Log(partner.trackPoints[keys[k]] + "  ");
-        }
-
-        Debug.Break();
-
-    }
 
 
 }
