@@ -87,9 +87,9 @@ public class ExampleIndividual : Individual {
 	void ValueMutationGaussian(float probability) {
 		List<float> keys = new List<float>(trackPoints.Keys);
 		float x1;
-    float x2;
-    double valueTemp;
-    float finalValue;
+		float x2;
+		double valueTemp;
+		float finalValue;
 		float stdDev;
 		float mean;
 

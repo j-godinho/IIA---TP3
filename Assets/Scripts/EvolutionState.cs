@@ -71,11 +71,13 @@ public class EvolutionState : MonoBehaviour {
 
 	void FixedUpdate () {
 		if (evolving) {
-			EvolStep ();
+		  EvolStep ();
 		} else if(drawing) {
-			population.Sort((x, y) => x.fitness.CompareTo(y.fitness));
-			drawer.drawCurve(population[0].trackPoints,info);
-			drawing=false;
+		  for(int i=0;i<population.Count;i++) population[i].evaluate();
+		  population.Sort((x, y) => x.fitness.CompareTo(y.fitness));
+		  Debug.Log(population[0].fitness);
+		  drawer.drawCurve(population[0].trackPoints,info);
+		  drawing=false;
 		}
 	}
 
@@ -93,7 +95,7 @@ public class EvolutionState : MonoBehaviour {
 			//if all individuals have been evaluated on the current generation, breed a new population
 			if(evaluatedIndividuals==populationSize) {
 				stats.PostGenLog(population,currentGeneration);
-
+				
 				population = BreedPopulation();
 				evaluatedIndividuals=0;
 				currentGeneration++;
