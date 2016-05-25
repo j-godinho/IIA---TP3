@@ -31,7 +31,7 @@ public class ExampleIndividual : Individual {
 	}
 
 	public override void Crossover(Individual partner, float probability, int n) {
-		
+
 		if (n != 0) {
 			NCrossover (partner, probability, n);
 		} else {
@@ -97,12 +97,9 @@ public class ExampleIndividual : Individual {
 			}
 
 
-
-			stdDev = Getstddev();
-			mean = (MinY + MaxY) /2;
-
-
 			if(UnityEngine.Random.Range (0f, 1f) < probability) {
+				stdDev = Getstddev();
+				mean = (MinY + MaxY) /2;
 				float tempValue = (float)gaussianMutation(mean, stdDev);
 				float finalValue = (float)clamp(tempValue);
 				trackPoints[x] = finalValue;
@@ -149,7 +146,7 @@ double gaussianMutation(double mean, double stddev)
 
 		return val;
 	}
-		
+
 
 	void NCrossover(Individual partner, float probability,int cutPoints) {
 
