@@ -77,7 +77,7 @@ public class EvolutionState : MonoBehaviour {
 			population.Sort((x, y) => x.fitness.CompareTo(y.fitness));
 			drawer.drawCurve(population[0].trackPoints,info);
 			drawing=false;
-			Application.CaptureScreenshot ("Images/Program.png");
+			Application.CaptureScreenshot ("Program.png");
 		}
 	}
 
