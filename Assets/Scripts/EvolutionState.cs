@@ -105,7 +105,7 @@ public class EvolutionState : MonoBehaviour {
 			//if all individuals have been evaluated on the current generation, breed a new population
 			if(evaluatedIndividuals==populationSize) {
 				stats.PostGenLog(population,currentGeneration);
-				
+
 				population = BreedPopulation();
 				evaluatedIndividuals=0;
 				currentGeneration++;
@@ -140,8 +140,17 @@ public class EvolutionState : MonoBehaviour {
 		List<Individual> newpop = new List<Individual>();
 
 		population.Sort((x, y) => x.fitness.CompareTo(y.fitness));
+		int nNaN = 0;
 		for(int i = 0; i < unchangedNumber; i++){
-			newpop.Add(population[i].Clone());
+			if(nNaN < population.Count){
+				if(!float.IsNaN(population[i+nNaN].fitness)){
+						newpop.Add(population[i+nNaN].Clone());
+				}
+				else{
+					nNaN++;
+				}
+			}
+
 		}
 
 
@@ -169,7 +178,7 @@ public class EvolutionState : MonoBehaviour {
 				selectedInds.RemoveAt(0);
 			}
 		}
-			
+
 		return newpop;
 	}
 
