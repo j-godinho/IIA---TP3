@@ -150,9 +150,7 @@ public class ExampleIndividual : Individual {
 		}
 		return val;
 	}
-
-
-
+		
 
 	void NCrossover(Individual partner, float probability,int cutPoints) {
 
@@ -165,7 +163,7 @@ public class ExampleIndividual : Individual {
 		int found = 0;
 		int aux;
 
-		for (int i =0; i < cutPoints; i++)
+		while(points.Count != cutPoints)
 		{
 			aux = UnityEngine.Random.Range(0, info.numTrackPoints);
 
@@ -183,8 +181,10 @@ public class ExampleIndividual : Individual {
 			}
 
 			found = 0;
-
 		}
+
+		points.Sort ();
+
 
 		List<float> keys = new List<float>(trackPoints.Keys);
 		for (int j = 0; j < points.Count; j++)
@@ -196,31 +196,9 @@ public class ExampleIndividual : Individual {
 				trackPoints[keys[i]] = partner.trackPoints[keys[i]];
 				partner.trackPoints[keys[i]] = tmp;
 			}
-
-
 		}
 
 	}
-
-	/*
-	void NCrossover(Individual partner, float probability, float n) {
-
-		if (UnityEngine.Random.Range (0f, 1f) > probability) {
-			return;
-		}
-		//this example always splits the chromosome in half
-		int crossoverPoint = Mathf.FloorToInt (info.numTrackPoints / n);
-		Debug.Log ("crossOverPoint: " + crossoverPoint);
-		List<float> keys = new List<float>(trackPoints.Keys);
-		for (int i=0; i<crossoverPoint; i++) {
-			float tmp = trackPoints[keys[i]];
-			trackPoints[keys[i]] = partner.trackPoints[keys[i]];
-			partner.trackPoints[keys[i]]=tmp;
-		}
-
-	}
-	*/
-
 
 	void HalfCrossover(Individual partner, float probability) {
 
