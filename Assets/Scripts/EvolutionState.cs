@@ -40,6 +40,9 @@ public class EvolutionState : MonoBehaviour {
 	bool evolving;
 	bool drawing;
 
+	public int testTimes;
+
+	int actual = 0;
 	// Use this for initialization
 	void Start () {
 		info = new ProblemInfo ();
@@ -67,6 +70,7 @@ public class EvolutionState : MonoBehaviour {
 		evolving = true;
 		drawing = false;
 
+
 	}
 
 
@@ -78,7 +82,12 @@ public class EvolutionState : MonoBehaviour {
 			population.Sort((x, y) => x.fitness.CompareTo(y.fitness));
 			drawer.drawCurve(population[0].trackPoints,info);
 			drawing=false;
-			Application.CaptureScreenshot ("Program.png");
+			Application.CaptureScreenshot ("Images/Program"+actual+".png");
+
+			if (actual != testTimes-1) {
+				actual++;
+				Start ();
+			}
 		}
 	}
 
@@ -107,6 +116,7 @@ public class EvolutionState : MonoBehaviour {
 			evolving=false;
 			drawing = true;
 			print ("evolution stopped");
+
 
 		}
 
@@ -159,9 +169,7 @@ public class EvolutionState : MonoBehaviour {
 				selectedInds.RemoveAt(0);
 			}
 		}
-
-
-
+			
 		return newpop;
 	}
 
