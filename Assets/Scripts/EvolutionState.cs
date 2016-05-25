@@ -66,6 +66,7 @@ public class EvolutionState : MonoBehaviour {
 		currentGeneration = 0;
 		evolving = true;
 		drawing = false;
+
 	}
 
 
@@ -76,6 +77,7 @@ public class EvolutionState : MonoBehaviour {
 			population.Sort((x, y) => x.fitness.CompareTo(y.fitness));
 			drawer.drawCurve(population[0].trackPoints,info);
 			drawing=false;
+			Application.CaptureScreenshot ("Images/Program.png");
 		}
 	}
 
@@ -104,6 +106,7 @@ public class EvolutionState : MonoBehaviour {
 			evolving=false;
 			drawing = true;
 			print ("evolution stopped");
+
 		}
 
 
