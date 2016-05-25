@@ -44,7 +44,8 @@ public class PolygonGenerator {
 		Renderer rend = curve.AddComponent(typeof(MeshRenderer)) as Renderer;
 		MeshFilter filter = curve.AddComponent(typeof(MeshFilter)) as MeshFilter;
 		filter.mesh = msh;
-		rend.material.SetColor("_Color", Color.black);
+		
+		rend.material.SetColor("_Color", new Color(UnityEngine.Random.Range(0f,1f),UnityEngine.Random.Range(0f,1f) , UnityEngine.Random.Range(0f,1f)));
 		curve.AddComponent (typeof(MeshCollider));
 		}
 }

@@ -86,12 +86,9 @@ public class ExampleIndividual : Individual {
 
 	void ValueMutationGaussian(float probability) {
 		List<float> keys = new List<float>(trackPoints.Keys);
-		float x1;
-		float x2;
-		double valueTemp;
-		float finalValue;
-		float stdDev;
-		float mean;
+
+		double stdDev;
+		double mean;
 
 		foreach (float x in keys) {
 			//make sure that the startpoint and the endpoint are not mutated
@@ -99,22 +96,39 @@ public class ExampleIndividual : Individual {
 				continue;
 			}
 
-			x1 = UnityEngine.Random.Range (0f, 1f);
-			x2 = UnityEngine.Random.Range (0f, 1f);
+
+
 			stdDev = Getstddev();
-			valueTemp = Math.Sqrt(-2.0 * Math.Log(x1)) * Math.Sin(2.0 * Math.PI * x2);
 			mean = (MinY + MaxY) /2;
-			finalValue = (float)valueTemp * stdDev + mean;
-			//Debug.Log("finalValue: " +finalValue);
+
+
 			if(UnityEngine.Random.Range (0f, 1f) < probability) {
-				//Debug.Log("trackPoints[x]: "+clamp(finalValue));
-				//finalValue = clamp(finalValue);
-				trackPoints[x] = clamp(finalValue);
+				float tempValue = (float)gaussianMutation(mean, stdDev);
+				float finalValue = (float)clamp(tempValue);
+				trackPoints[x] = finalValue;
 
 
 			}
 		}
 	}
+
+
+double gaussianMutation(double mean, double stddev)
+{
+	 double x1 = UnityEngine.Random.Range (0f, 1f);
+	 double x2 = UnityEngine.Random.Range (0f, 1f);
+
+	 // The method requires sampling from a uniform random of (0,1]
+	 // but Random.NextDouble() returns a sample of [0,1).
+	 // Thanks to Colin Green for catching this.
+	 if(x1 == 0)
+			 x1 = 1;
+	 if(x2 == 0)
+			 x2 = 1;
+
+	 double y1 = Math.Sqrt(-2.0 * Math.Log(x1)) * Math.Cos(2.0 * Math.PI * x2);
+	 return y1 * stddev + mean;
+}
 
 	float Getstddev() {
 		float mean = (MinY + MaxY) /2;
@@ -123,31 +137,16 @@ public class ExampleIndividual : Individual {
 		return UnityEngine.Random.Range(mean, sigma);
 	}
 
-	float gaussianMutation(float mean, float stddev) {
-		float x1 = UnityEngine.Random.Range (0f, 1f);
-		float x2 = UnityEngine.Random.Range (0f, 1f);
-
-		if(x1 == 0){
-			x1 = 1;
-		}
-		if(x2 == 0){
-			x2 = 1;
-		}
-
-		double y1 = Math.Sqrt(-2.0 * Math.Log(x1)) * Math.Cos(2.0 * Math.PI * x2);
-		float finalValue = (float)y1 * stddev + mean;
-		finalValue = clamp(finalValue);
-		return finalValue;
-	}
-
-	float clamp(float val)
+	double clamp(double val)
 	{
+
 		if(val >= MaxY){
 			return MaxY;
 		}
 		if(val <= MinY){
 			return MinY;
 		}
+
 		return val;
 	}
 		
