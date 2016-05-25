@@ -31,11 +31,12 @@ public class ExampleIndividual : Individual {
 	}
 
 	public override void Crossover(Individual partner, float probability, float n) {
-		//HalfCrossover (partner, probability);
+		HalfCrossover (partner, probability);
+		/*
 		if (n != 0) {
 			NCrossover(partner, probability, n);
 		}
-
+		*/
 	}
 
 	public override void CalcTrackPoints() {
@@ -84,15 +85,32 @@ public class ExampleIndividual : Individual {
 
 	void ValueMutationGaussian(float probability) {
 		List<float> keys = new List<float>(trackPoints.Keys);
+		float x1;
+    float x2;
+    double valueTemp;
+    float finalValue;
+		float stdDev;
+		float mean;
+
 		foreach (float x in keys) {
 			//make sure that the startpoint and the endpoint are not mutated
 			if(Math.Abs (x-info.startPointX)<0.01 || Math.Abs (x-info.endPointX)<0.01) {
 				continue;
 			}
+
+			x1 = UnityEngine.Random.Range (0f, 1f);
+			x2 = UnityEngine.Random.Range (0f, 1f);
+			stdDev = Getstddev();
+			valueTemp = Math.Sqrt(-2.0 * Math.Log(x1)) * Math.Sin(2.0 * Math.PI * x2);
+			mean = (MinY + MaxY) /2;
+			finalValue = (float)valueTemp * stdDev + mean;
+			//Debug.Log("finalValue: " +finalValue);
 			if(UnityEngine.Random.Range (0f, 1f) < probability) {
-				float stddev = Getstddev();
-				trackPoints[x] = gaussianMutation(trackPoints[x], stddev);
-				trackPoints[x] = clamp(trackPoints[x], MinY, MaxY);
+				//Debug.Log("trackPoints[x]: "+clamp(finalValue));
+				//finalValue = clamp(finalValue);
+				trackPoints[x] = clamp(finalValue);
+
+
 			}
 		}
 	}
@@ -100,7 +118,7 @@ public class ExampleIndividual : Individual {
 	float Getstddev() {
 		float mean = (MinY + MaxY) /2;
 		float sigma = (MaxY - mean) / 3;
-		//Debug.Log("stddev: " +sigma);
+
 		return UnityEngine.Random.Range(mean, sigma);
 	}
 
@@ -117,16 +135,17 @@ public class ExampleIndividual : Individual {
 
 		double y1 = Math.Sqrt(-2.0 * Math.Log(x1)) * Math.Cos(2.0 * Math.PI * x2);
 		float finalValue = (float)y1 * stddev + mean;
+		finalValue = clamp(finalValue);
 		return finalValue;
 	}
 
-	float clamp(float val, float min, float max)
+	float clamp(float val)
 	{
-		if(val >= max){
-			return max;
+		if(val >= MaxY){
+			return MaxY;
 		}
-		if(val <= min){
-			return min;
+		if(val <= MinY){
+			return MinY;
 		}
 		return val;
 	}
