@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 
 public class StatisticsLogger {
-	
+
 	public Dictionary<int,float> bestFitness;
 	public Dictionary<int,float> meanFitness;
 
@@ -22,7 +22,12 @@ public class StatisticsLogger {
 	//saves fitness info and writes to console
 	public void PostGenLog(List<Individual> pop, int currentGen) {
 		pop.Sort((x, y) => x.fitness.CompareTo(y.fitness));
-	
+		
+		if(float.IsNaN(pop[0].fitness)){
+			Debug.Log("nan");
+		}
+		Debug.Log("fitness value: "+pop[0].fitness);
+
 		bestFitness.Add (currentGen, pop[0].fitness);
 		meanFitness.Add (currentGen, 0f);
 
