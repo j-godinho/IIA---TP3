@@ -30,13 +30,14 @@ public class ExampleIndividual : Individual {
 		ValueMutationGaussian(probability);
 	}
 
-	public override void Crossover(Individual partner, float probability, float n) {
-		HalfCrossover (partner, probability);
-		/*
+	public override void Crossover(Individual partner, float probability, int n) {
+		
 		if (n != 0) {
-			NCrossover(partner, probability, n);
+			NCrossover (partner, probability, n);
+		} else {
+			HalfCrossover (partner, probability);
 		}
-		*/
+
 	}
 
 	public override void CalcTrackPoints() {
@@ -151,6 +152,57 @@ public class ExampleIndividual : Individual {
 	}
 
 
+
+
+	void NCrossover(Individual partner, float probability,int cutPoints) {
+
+		if (UnityEngine.Random.Range (0f, 1f) > probability) {
+			return;
+		}
+
+		List<int> points = new List<int>();
+
+		int found = 0;
+		int aux;
+
+		for (int i =0; i < cutPoints; i++)
+		{
+			aux = UnityEngine.Random.Range(0, info.numTrackPoints);
+
+			for(int j = 0; j < points.Count; j++)
+			{
+				if (points[j] == aux)
+				{
+					found = 1;
+				}
+			}
+
+			if (found == 0)
+			{
+				points.Add(aux);
+			}
+
+			found = 0;
+
+		}
+
+		List<float> keys = new List<float>(trackPoints.Keys);
+		for (int j = 0; j < points.Count; j++)
+		{
+
+			for (int i = 0; i < points[j]; i++)
+			{
+				float tmp = trackPoints[keys[i]];
+				trackPoints[keys[i]] = partner.trackPoints[keys[i]];
+				partner.trackPoints[keys[i]] = tmp;
+			}
+
+
+		}
+
+	}
+
+	/*
 	void NCrossover(Individual partner, float probability, float n) {
 
 		if (UnityEngine.Random.Range (0f, 1f) > probability) {
@@ -158,6 +210,7 @@ public class ExampleIndividual : Individual {
 		}
 		//this example always splits the chromosome in half
 		int crossoverPoint = Mathf.FloorToInt (info.numTrackPoints / n);
+		Debug.Log ("crossOverPoint: " + crossoverPoint);
 		List<float> keys = new List<float>(trackPoints.Keys);
 		for (int i=0; i<crossoverPoint; i++) {
 			float tmp = trackPoints[keys[i]];
@@ -166,7 +219,7 @@ public class ExampleIndividual : Individual {
 		}
 
 	}
-
+	*/
 
 
 	void HalfCrossover(Individual partner, float probability) {
