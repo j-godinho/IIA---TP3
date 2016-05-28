@@ -32,7 +32,6 @@ public class StatisticsLogger {
 					i++;
 				}
 		}
-		Debug.Log("fitness value: "+pop[0].fitness);
 
 		bestFitness.Add (currentGen, pop[0].fitness);
 		meanFitness.Add (currentGen, 0f);
