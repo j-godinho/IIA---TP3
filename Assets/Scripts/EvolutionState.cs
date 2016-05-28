@@ -85,8 +85,8 @@ public class EvolutionState : MonoBehaviour {
       Application.CaptureScreenshot ("Images/Program"+actual+".png");
 
       if (actual != testTimes-1) {
-	actual++;
-	Start ();
+			actual++;
+			Start ();
       }
     }
   }
