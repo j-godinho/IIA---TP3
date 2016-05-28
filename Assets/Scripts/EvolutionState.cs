@@ -140,19 +140,10 @@ public class EvolutionState : MonoBehaviour {
     List<Individual> newpop = new List<Individual>();
 
     population.Sort((x, y) => x.fitness.CompareTo(y.fitness));
-    int nNaN = 0;
     for(int i = 0; i < unchangedNumber; i++){
-      if(nNaN < population.Count){
-	if(!float.IsNaN(population[i+nNaN].fitness)){
-	  newpop.Add(population[i+nNaN].Clone());
-	}
-	else{
-	  nNaN++;
-	}
-      }
-
+	newpop.Add(population[i].Clone());
     }
-
+    
 
     //breed individuals and place them on new population. We'll apply crossover and mutation later
     while(newpop.Count<populationSize) {
