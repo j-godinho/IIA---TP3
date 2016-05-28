@@ -14,7 +14,8 @@ public class EvolutionState : MonoBehaviour {
   public int selectionMethod;
   public int tournamentSize;
   public int nCrossings;
-
+  public int stddev;
+  
   private ProblemInfo info;
 
 
@@ -59,9 +60,9 @@ public class EvolutionState : MonoBehaviour {
     } else if (selectionMethod == 1) {
       selection = new RouletteSelection ();
     }
-
+    
     stats = new StatisticsLogger (statsFilename);
-
+    
     drawer = new PolygonGenerator ();
 
     InitPopulation ();
@@ -82,7 +83,10 @@ public class EvolutionState : MonoBehaviour {
       population.Sort((x, y) => x.fitness.CompareTo(y.fitness));
       drawer.drawCurve(population[0].trackPoints,info);
       drawing=false;
-      Application.CaptureScreenshot ("Images/Program"+actual+".png");
+      DestroyObject(GameObject.Find("New Game Object"));
+      if(population[0].fitness < 1.810f)
+	Application.CaptureScreenshot ("Images/Program"+actual+".png");
+      
 
       if (actual != testTimes-1) {
 	actual++;
@@ -105,23 +109,18 @@ public class EvolutionState : MonoBehaviour {
       //if all individuals have been evaluated on the current generation, breed a new population
       if(evaluatedIndividuals==populationSize) {
 	stats.PostGenLog(population,currentGeneration);
-				
 	population = BreedPopulation();
 	evaluatedIndividuals=0;
 	currentGeneration++;
       }
-
+      
     } else {
       stats.finalLog();
       evolving=false;
       drawing = true;
       print ("evolution stopped");
 
-
     }
-
-
-
 
   }
 
@@ -129,7 +128,7 @@ public class EvolutionState : MonoBehaviour {
   void InitPopulation () {
     population = new List<Individual>();
     while (population.Count<populationSize) {
-      ExampleIndividual newind = new ExampleIndividual(info); //change accordingly
+      NewIndividual newind = new NewIndividual(info); //change accordingly
       newind.Initialize();
       population.Add (newind);
     }
@@ -159,13 +158,13 @@ public class EvolutionState : MonoBehaviour {
 
       //apply crossover between pairs of individuals and mutation to each one
       while(selectedInds.Count>1) {
-	selectedInds[0].Crossover(selectedInds[1],crossoverProbability, nCrossings);
-	selectedInds[0].Mutate(mutationProbability);
-	selectedInds[1].Mutate(mutationProbability);
+	//selectedInds[0].Crossover(selectedInds[1],crossoverProbability, nCrossings);
+	selectedInds[0].Mutate(mutationProbability, stddev);
+	selectedInds[1].Mutate(mutationProbability, stddev);
 	selectedInds.RemoveRange(0,2);
       }
       if(selectedInds.Count==1) {
-	selectedInds[0].Mutate(mutationProbability);
+	selectedInds[0].Mutate(mutationProbability, stddev);
 	selectedInds.RemoveAt(0);
       }
     }

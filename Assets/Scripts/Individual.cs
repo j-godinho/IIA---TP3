@@ -21,7 +21,7 @@ public abstract class Individual {
 
   //override on each specific individual class
   public abstract void Initialize ();
-  public abstract void Mutate (float probability);
+  public abstract void Mutate (float probability, float stddev);
   public abstract void Crossover (Individual partner, float probability, int n);
   public abstract void CalcTrackPoints ();
   public abstract void CalcFitness();
@@ -31,18 +31,17 @@ public abstract class Individual {
     CalcTrackPoints ();
     eval = problem.evaluate (trackPoints);
     CalcFitness ();
-
   }
-
+  
   public override string ToString ()
   {
     List<float> result = new List<float> ();
-
+    
     foreach (KeyValuePair<float, float> point in trackPoints) {
       result.Add (point.Key);
       result.Add (point.Value);
     }
-
+    
     return "[Individual] track points: [" + string.Join (",", result.ConvertAll<string> (f => f.ToString()).ToArray()) + "]";
   }
 

@@ -1,9 +1,9 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System;
 using System.Collections.Generic;
 
-public class ExampleIndividual : Individual {
+public class NewIndividual : Individual {
 
 
   private float MinX;
@@ -11,14 +11,16 @@ public class ExampleIndividual : Individual {
   private float MinY;
   private float MaxY;
 
+  public List<float> deltas;
 
-  public ExampleIndividual(ProblemInfo info) : base(info) {
-
+  public NewIndividual(ProblemInfo info) : base(info) {
+    
     MinX = info.startPointX;
     MaxX = info.endPointX;
     MaxY = info.startPointY > info.endPointY ? info.startPointY : info.endPointY;
-
+    
     MinY = MaxY - 2 * (Mathf.Abs (info.startPointY - info.endPointY));
+    deltas = new List<float>();
   }
 
   public override void Initialize() {
@@ -26,10 +28,10 @@ public class ExampleIndividual : Individual {
   }
 
   public override void Mutate(float probability, float stddev) {
-    //NewValueMutation (probability);
-    ValueMutationGaussian(probability, stddev);
+    NewValueMutation (probability);
+    //ValueMutationGaussian(probability, stddev);
   }
-
+  
   public override void Crossover(Individual partner, float probability, int n) {
 
     if (n != 0) {
@@ -37,22 +39,30 @@ public class ExampleIndividual : Individual {
     } else {
       HalfCrossover (partner, probability);
     }
-
+    
   }
-
+  
   public override void CalcTrackPoints() {
-    //the representation used in the example individual is a list of trackpoints, no need to convert
+    float step = (info.endPointX - info.startPointX) / (info.numTrackPoints - 1);
+    trackPoints.Add(info.startPointX, info.startPointY);
+    float lastPointX = info.startPointX;
+    for(int i=0;i<deltas.Count;i++){
+      trackPoints.Add(info.startPointX + (i+1)*step, trackPoints[lastPointX] + deltas[i]);
+      lastPointX = info.startPointX + (i+1)*step;
+    }
+    trackPoints.Add(info.endPointX, info.endPointY);
   }
-
+  
   public override void CalcFitness() {
     fitness = eval.time; //in this case we only consider time
   }
 
 
   public override Individual Clone() {
-    ExampleIndividual newobj = (ExampleIndividual)this.MemberwiseClone ();
+    NewIndividual newobj = (NewIndividual)this.MemberwiseClone ();
     newobj.fitness = 0f;
-    newobj.trackPoints = new Dictionary<float,float> (this.trackPoints);
+    newobj.trackPoints = new Dictionary<float, float>();
+    newobj.deltas = new List<float> (this.deltas);
     return newobj;
   }
 
@@ -60,67 +70,66 @@ public class ExampleIndividual : Individual {
 
   void RandomInitialization() {
     float step = (info.endPointX - info.startPointX ) / (info.numTrackPoints - 1);
-    float y = 0;
+    float delta = 0;
+    float currentY = info.startPointY;
     
-    trackPoints.Add (info.startPointX, info.startPointY);//startpoint
-    for(int i = 1; i < info.numTrackPoints - 1; i++) {
-      y = UnityEngine.Random.Range(MinY, MaxY);
-      trackPoints.Add(info.startPointX + i * step, y);
+    for(int i = 0; i < info.numTrackPoints - 2; i++) {
+      float limInf = (MinY + 0.01f) - currentY;
+      float limSup = (MaxY - 0.01f) - currentY;
+      delta = UnityEngine.Random.Range(limInf, limSup);
+      deltas.Add(delta);
+      currentY+=delta;
     }
-    trackPoints.Add (info.endPointX, info.endPointY); //endpoint
+    
   }
   
   void NewValueMutation(float probability) {
-    List<float> keys = new List<float>(trackPoints.Keys);
-    foreach (float x in keys) {
-      //make sure that the startpoint and the endpoint are not mutated
-      if(Math.Abs (x-info.startPointX)<0.01 || Math.Abs (x-info.endPointX)<0.01) {
-	continue;
-      }
+    float currentY = info.startPointY;
+
+    for(int x = 0; x < deltas.Count; x++) {
       if(UnityEngine.Random.Range (0f, 1f) < probability) {
-	trackPoints[x] = UnityEngine.Random.Range(MinY,MaxY);
+	float limInf = (MinY + 0.01f) - currentY;
+	float limSup = (MaxY - 0.01f) - currentY;
+	deltas[x] = UnityEngine.Random.Range(limInf,limSup);
       }
+      else{
+	deltas[x] = (float)clamp(deltas[x],(MinY + 0.01f) - currentY, (MaxY - 0.01f) - currentY);
+      }
+      currentY += deltas[x];
     }
   }
 
 
   void ValueMutationGaussian(float probability, float stddev) {
-    List<float> keys = new List<float>(trackPoints.Keys);
 
-    double stdDev;
     double mean;
 
-    foreach (float x in keys) {
-      //make sure that the startpoint and the endpoint are not mutated
-      if(Math.Abs (x-info.startPointX)<0.01 || Math.Abs (x-info.endPointX)<0.01) {
-	continue;
-      }
-
-
+    float currentY = info.startPointY;
+    
+    for(int x = 0; x< deltas.Count;x++) {
       if(UnityEngine.Random.Range (0f, 1f) < probability) {
-	stdDev = Getstddev();
-	mean = (MinY + MaxY) /2;
-	float tempValue = (float)gaussianMutation(mean, stdDev);
-	float finalValue = (float)clamp(tempValue);
-	trackPoints[x] = finalValue;
+	float tempValue = (float)gaussianMutation(x, stddev);
+	float limInf = (MinY + 0.01f) - currentY;
+	float limSup = (MaxY - 0.01f) - currentY;
+	float finalValue = (float)clamp(tempValue, limInf, limSup);
+	deltas[x] = finalValue;
       }
+      currentY += deltas[x];
     }
+    
   }
 
 
-  double gaussianMutation(double mean, double stddev)
+  double gaussianMutation(double mean, float stddev)
   {
     double x1 = UnityEngine.Random.Range (0f, 1f);
     double x2 = UnityEngine.Random.Range (0f, 1f);
-
-    // The method requires sampling from a uniform random of (0,1]
-    // but Random.NextDouble() returns a sample of [0,1).
-    // Thanks to Colin Green for catching this.
+    
     if(x1 == 0)
       x1 = 1;
     if(x2 == 0)
       x2 = 1;
-
+    
     double y1 = Math.Sqrt(-2.0 * Math.Log(x1)) * Math.Cos(2.0 * Math.PI * x2);
     return y1 * stddev + mean;
   }
@@ -132,14 +141,13 @@ public class ExampleIndividual : Individual {
     return UnityEngine.Random.Range(mean, sigma);
   }
 
-  double clamp(double val)
+  double clamp(double val, float min, float max)
   {
-
-    if(val >= MaxY - 0.01){
-      return MaxY - 0.01;
+    if(val >= max){
+      return max;
     }
-    if(val <= MinY + 0.01){
-      return MinY + 0.01;
+    if(val <= min){
+      return min;
     }
 
     return val;
@@ -152,14 +160,15 @@ public class ExampleIndividual : Individual {
       return;
     }
     
+    NewIndividual newPartner = (NewIndividual)partner;
+    
     List<int> points = new List<int>();
 
-    int found = 0;
     int aux;
-
+    
     while(points.Count != cutPoints)
       {
-	aux = UnityEngine.Random.Range(0, info.numTrackPoints);
+	aux = UnityEngine.Random.Range(0, info.numTrackPoints - 1);
 	
 	if (!points.Contains(aux))
 	  {
@@ -170,19 +179,18 @@ public class ExampleIndividual : Individual {
     points.Sort ();
     
     
-    List<float> keys = new List<float>(trackPoints.Keys);
     for (int j = 0; j < points.Count; j++)
       {
 	int limit = (j == points.Count-1)?cutPoints-1:points[j+1];
 	for (int i = points[j]; i < limit; i++)
 	  {
-	    float tmp = trackPoints[keys[i]];
-	    trackPoints[keys[i]] = partner.trackPoints[keys[i]];
-	    partner.trackPoints[keys[i]] = tmp;
+	    float tmp = deltas[i];
+	    deltas[i] = newPartner.deltas[i];
+	    newPartner.deltas[i] = tmp;
 	    j++;
 	  }
       }
-
+    
   }
 
   void HalfCrossover(Individual partner, float probability) {
@@ -190,14 +198,15 @@ public class ExampleIndividual : Individual {
     if (UnityEngine.Random.Range (0f, 1f) > probability) {
       return;
     }
-    //this example always splits the chromosome in half
-    int crossoverPoint = Mathf.FloorToInt (info.numTrackPoints / 2f);
-    List<float> keys = new List<float>(trackPoints.Keys);
-    for (int i=0; i<crossoverPoint; i++) {
-      float tmp = trackPoints[keys[i]];
-      trackPoints[keys[i]] = partner.trackPoints[keys[i]];
-      partner.trackPoints[keys[i]]=tmp;
-    }
 
+    NewIndividual newPartner = (NewIndividual)partner;
+    
+    //this example always splits the chromosome in half
+    int crossoverPoint = Mathf.FloorToInt ((info.numTrackPoints -1) / 2f);
+    for (int i=0; i<crossoverPoint; i++) {
+      float tmp = deltas[i];
+      deltas[i] = newPartner.deltas[i];
+      newPartner.deltas[i]=tmp;
+    }
   }
 }
