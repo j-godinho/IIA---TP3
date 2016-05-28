@@ -38,21 +38,18 @@ public class TournamentSelection : SelectionMethod {
 		//Debug.Log("selectIndividual\n");
 
 		List<Individual> tournament = new List<Individual> ();
-		//Debug.Log(tournametSize);
 		for(int i = 0; i < tournamentSize; i++){
-			int index = (int)(Random.Range(0, tournamentSize-1));
-
+			int index = (int)(Random.Range(0, tournamentSize));
 			tournament.Add(population[index]);
-			//Debug.Log("oi");
 		}
-
+		
 		Individual bestIndividual = tournament[0];
 		float bestFitness = bestIndividual.fitness;
 		for(int i = 1; i < tournamentSize; i++){
-			if(tournament[i].fitness < bestFitness){
-				bestIndividual = tournament[i];
-				bestFitness = tournament[i].fitness;
-			}
+		  if(tournament[i].fitness < bestFitness){
+		    bestIndividual = tournament[i];
+		    bestFitness = tournament[i].fitness;
+		  }
 		}
 		return bestIndividual;
 	}
