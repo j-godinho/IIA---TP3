@@ -25,9 +25,9 @@ public class ExampleIndividual : Individual {
     RandomInitialization();
   }
 
-  public override void Mutate(float probability, float stddev) {
+  public override void Mutate(float probability) {
     //NewValueMutation (probability);
-    ValueMutationGaussian(probability, stddev);
+    ValueMutationGaussian(probability);
   }
 
   public override void Crossover(Individual partner, float probability, int n) {
@@ -84,7 +84,7 @@ public class ExampleIndividual : Individual {
   }
 
 
-  void ValueMutationGaussian(float probability, float stddev) {
+  void ValueMutationGaussian(float probability) {
     List<float> keys = new List<float>(trackPoints.Keys);
 
     double stdDev;
@@ -113,9 +113,6 @@ public class ExampleIndividual : Individual {
     double x1 = UnityEngine.Random.Range (0f, 1f);
     double x2 = UnityEngine.Random.Range (0f, 1f);
 
-    // The method requires sampling from a uniform random of (0,1]
-    // but Random.NextDouble() returns a sample of [0,1).
-    // Thanks to Colin Green for catching this.
     if(x1 == 0)
       x1 = 1;
     if(x2 == 0)

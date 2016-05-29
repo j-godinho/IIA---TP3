@@ -21,7 +21,7 @@ public abstract class Individual {
 
   //override on each specific individual class
   public abstract void Initialize ();
-  public abstract void Mutate (float probability, float stddev);
+  public abstract void Mutate (float probability);
   public abstract void Crossover (Individual partner, float probability, int n);
   public abstract void CalcTrackPoints ();
   public abstract void CalcFitness();
@@ -30,6 +30,10 @@ public abstract class Individual {
   public void evaluate() {
     CalcTrackPoints ();
     eval = problem.evaluate (trackPoints);
+    if(double.IsInfinity(eval.time)){
+      PolygonGenerator drawer = new PolygonGenerator ();
+      drawer.drawCurve(trackPoints,info);
+    }
     CalcFitness ();
   }
   
@@ -50,5 +54,5 @@ public abstract class Individual {
 
 
 
-
+  
 }

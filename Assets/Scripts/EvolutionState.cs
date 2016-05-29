@@ -70,8 +70,6 @@ public class EvolutionState : MonoBehaviour {
     currentGeneration = 0;
     evolving = true;
     drawing = false;
-
-
   }
 
 
@@ -83,9 +81,7 @@ public class EvolutionState : MonoBehaviour {
       population.Sort((x, y) => x.fitness.CompareTo(y.fitness));
       drawer.drawCurve(population[0].trackPoints,info);
       drawing=false;
-      DestroyObject(GameObject.Find("New Game Object"));
-      if(population[0].fitness < 1.810f)
-	Application.CaptureScreenshot ("Images/Program"+actual+".png");
+      Application.CaptureScreenshot ("Images/Program"+actual+".png");
       
 
       if (actual != testTimes-1) {
@@ -119,9 +115,8 @@ public class EvolutionState : MonoBehaviour {
       evolving=false;
       drawing = true;
       print ("evolution stopped");
-
     }
-
+    
   }
 
 
@@ -133,17 +128,17 @@ public class EvolutionState : MonoBehaviour {
       population.Add (newind);
     }
   }
-
-
+  
+  
   List<Individual> BreedPopulation() {
     List<Individual> newpop = new List<Individual>();
-
+    
     population.Sort((x, y) => x.fitness.CompareTo(y.fitness));
     for(int i = 0; i < unchangedNumber; i++){
-	newpop.Add(population[i].Clone());
+      newpop.Add(population[i].Clone());
     }
     
-
+    
     //breed individuals and place them on new population. We'll apply crossover and mutation later
     while(newpop.Count<populationSize) {
       List<Individual> selectedInds = selection.selectIndividuals(population,2); //we should propably always select pairs of individuals
@@ -159,12 +154,12 @@ public class EvolutionState : MonoBehaviour {
       //apply crossover between pairs of individuals and mutation to each one
       while(selectedInds.Count>1) {
 	//selectedInds[0].Crossover(selectedInds[1],crossoverProbability, nCrossings);
-	selectedInds[0].Mutate(mutationProbability, stddev);
-	selectedInds[1].Mutate(mutationProbability, stddev);
+	selectedInds[0].Mutate(mutationProbability);
+	selectedInds[1].Mutate(mutationProbability);
 	selectedInds.RemoveRange(0,2);
       }
       if(selectedInds.Count==1) {
-	selectedInds[0].Mutate(mutationProbability, stddev);
+	selectedInds[0].Mutate(mutationProbability);
 	selectedInds.RemoveAt(0);
       }
     }

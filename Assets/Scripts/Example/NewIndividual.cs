@@ -27,9 +27,9 @@ public class NewIndividual : Individual {
     RandomInitialization();
   }
 
-  public override void Mutate(float probability, float stddev) {
-    NewValueMutation (probability);
-    //ValueMutationGaussian(probability, stddev);
+  public override void Mutate(float probability) {
+    //NewValueMutation (probability);
+    ValueMutationGaussian(probability);
   }
   
   public override void Crossover(Individual partner, float probability, int n) {
@@ -46,18 +46,20 @@ public class NewIndividual : Individual {
     float step = (info.endPointX - info.startPointX) / (info.numTrackPoints - 1);
     trackPoints.Add(info.startPointX, info.startPointY);
     float lastPointX = info.startPointX;
+    Debug.Log(deltas[deltas.Count-1]);
     for(int i=0;i<deltas.Count;i++){
       trackPoints.Add(info.startPointX + (i+1)*step, trackPoints[lastPointX] + deltas[i]);
       lastPointX = info.startPointX + (i+1)*step;
     }
     trackPoints.Add(info.endPointX, info.endPointY);
+    
   }
   
   public override void CalcFitness() {
     fitness = eval.time; //in this case we only consider time
   }
-
-
+  
+  
   public override Individual Clone() {
     NewIndividual newobj = (NewIndividual)this.MemberwiseClone ();
     newobj.fitness = 0f;
@@ -100,21 +102,26 @@ public class NewIndividual : Individual {
   }
 
 
-  void ValueMutationGaussian(float probability, float stddev) {
+  void ValueMutationGaussian(float probability) {
 
+
+    float stddev = (MaxY - MinY)/6f;
     double mean;
-
     float currentY = info.startPointY;
     
     for(int x = 0; x< deltas.Count;x++) {
       if(UnityEngine.Random.Range (0f, 1f) < probability) {
-	float tempValue = (float)gaussianMutation(x, stddev);
+	float tempValue = (float)gaussianMutation(deltas[x], stddev);
 	float limInf = (MinY + 0.01f) - currentY;
 	float limSup = (MaxY - 0.01f) - currentY;
 	float finalValue = (float)clamp(tempValue, limInf, limSup);
 	deltas[x] = finalValue;
       }
+      else{
+	deltas[x] = (float)clamp(deltas[x],(MinY + 0.01f) - currentY, (MaxY - 0.01f) - currentY);
+      }
       currentY += deltas[x];
+      if(currentY >= MaxY) Debug.Log(currentY);
     }
     
   }
