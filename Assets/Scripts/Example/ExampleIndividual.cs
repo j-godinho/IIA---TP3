@@ -25,9 +25,11 @@ public class ExampleIndividual : Individual {
     RandomInitialization();
   }
 
-  public override void Mutate(float probability) {
-    //NewValueMutation (probability);
-    ValueMutationGaussian(probability);
+  public override void Mutate(float probability, bool gaussian) {
+    if(gaussian)
+      ValueMutationGaussian(probability);
+    else
+      NewValueMutation (probability);
   }
 
   public override void Crossover(Individual partner, float probability, int n) {
@@ -86,7 +88,8 @@ public class ExampleIndividual : Individual {
   void ValueMutationGaussian(float probability) {
     List<float> keys = new List<float>(trackPoints.Keys);
 
-    double stdDev;
+    float stddev = (MaxY - MinY)/6f;
+
     double mean;
 
     foreach (float x in keys) {
@@ -97,9 +100,8 @@ public class ExampleIndividual : Individual {
 
 
       if(UnityEngine.Random.Range (0f, 1f) < probability) {
-	stdDev = Getstddev();
 	mean = (MinY + MaxY) /2;
-	float tempValue = (float)gaussianMutation(mean, stdDev);
+	float tempValue = (float)gaussianMutation(mean, stddev);
 	float finalValue = (float)clamp(tempValue);
 	trackPoints[x] = finalValue;
       }

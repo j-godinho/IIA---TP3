@@ -21,7 +21,7 @@ public abstract class Individual {
 
   //override on each specific individual class
   public abstract void Initialize ();
-  public abstract void Mutate (float probability);
+  public abstract void Mutate (float probability, bool gaussian);
   public abstract void Crossover (Individual partner, float probability, int n);
   public abstract void CalcTrackPoints ();
   public abstract void CalcFitness();

@@ -22,16 +22,18 @@ public class NewIndividual : Individual {
     MinY = MaxY - 2 * (Mathf.Abs (info.startPointY - info.endPointY));
     deltas = new List<float>();
   }
-
+  
   public override void Initialize() {
     this.deltas.Clear();
     trackPoints.Clear();
     RandomInitialization();
   }
 
-  public override void Mutate(float probability) {
-    //NewValueMutation (probability);
-    ValueMutationGaussian(probability);
+  public override void Mutate(float probability, bool gaussian) {
+    if(gaussian)
+      ValueMutationGaussian(probability);
+    else
+      NewValueMutation (probability);
   }
   
   public override void Crossover(Individual partner, float probability, int n) {
@@ -90,13 +92,13 @@ public class NewIndividual : Individual {
     float currentY = info.startPointY;
 
     for(int x = 0; x < deltas.Count; x++) {
+      float limInf = (MinY + 0.01f) - currentY;
+      float limSup = (MaxY - 0.01f) - currentY;
       if(UnityEngine.Random.Range (0f, 1f) < probability) {
-	float limInf = (MinY + 0.01f) - currentY;
-	float limSup = (MaxY - 0.01f) - currentY;
 	deltas[x] = UnityEngine.Random.Range(limInf,limSup);
       }
       else{
-	deltas[x] = (float)clamp(deltas[x],(MinY + 0.01f) - currentY, (MaxY - 0.01f) - currentY);
+	deltas[x] = (float)clamp(deltas[x],limInf,limSup);
       }
       currentY += deltas[x];
     }
@@ -104,25 +106,22 @@ public class NewIndividual : Individual {
 
 
   void ValueMutationGaussian(float probability) {
-
-
     float stddev = (MaxY - MinY)/6f;
     double mean;
     float currentY = info.startPointY;
     
     for(int x = 0; x< deltas.Count;x++) {
+      float limInf = (MinY + 0.01f) - currentY;
+      float limSup = (MaxY - 0.01f) - currentY;
       if(UnityEngine.Random.Range (0f, 1f) < probability) {
 	float tempValue = (float)gaussianMutation(deltas[x], stddev);
-	float limInf = (MinY + 0.01f) - currentY;
-	float limSup = (MaxY - 0.01f) - currentY;
 	float finalValue = (float)clamp(tempValue, limInf, limSup);
 	deltas[x] = finalValue;
       }
       else{
-	deltas[x] = (float)clamp(deltas[x],(MinY + 0.01f) - currentY, (MaxY - 0.01f) - currentY);
+	deltas[x] = (float)clamp(deltas[x],limInf ,limSup);
       }
       currentY += deltas[x];
-      if(currentY >= MaxY) Debug.Log(currentY);
     }
     
   }
@@ -145,7 +144,7 @@ public class NewIndividual : Individual {
   float Getstddev() {
     float mean = (MinY + MaxY) /2;
     float sigma = (MaxY - mean) / 3;
-
+    
     return UnityEngine.Random.Range(mean, sigma);
   }
 
@@ -185,7 +184,9 @@ public class NewIndividual : Individual {
       }
     
     points.Sort ();
-    
+
+    float currentY1 = info.startPointY;
+    float currentY2 = info.startPointY;
     
     for (int j = 0; j < points.Count; j++)
       {
@@ -198,15 +199,29 @@ public class NewIndividual : Individual {
 	    j++;
 	  }
       }
+    float limSup;
+    float limInf;
+
+    for(int i=0;i<deltas.Count;i++){
+      limSup = (MaxY - 0.01f) - currentY1;
+      limInf = (MinY + 0.01f) - currentY1;
+      deltas[i] = (float)clamp(deltas[i],limInf,limSup);
+      currentY1+=deltas[i];
+
+      limSup = (MaxY - 0.01f) - currentY2;
+      limInf = (MinY + 0.01f) - currentY2;
+      newPartner.deltas[i] = (float)clamp(deltas[i],limInf,limSup);      
+      currentY2+=newPartner.deltas[i];
+    }
     
   }
-
+  
   void HalfCrossover(Individual partner, float probability) {
 
     if (UnityEngine.Random.Range (0f, 1f) > probability) {
       return;
     }
-
+    
     NewIndividual newPartner = (NewIndividual)partner;
     
     //this example always splits the chromosome in half
@@ -215,6 +230,24 @@ public class NewIndividual : Individual {
       float tmp = deltas[i];
       deltas[i] = newPartner.deltas[i];
       newPartner.deltas[i]=tmp;
+    }
+
+    float currentY1 = info.startPointY;
+    float currentY2 = info.startPointY;
+
+    float limSup;
+    float limInf;
+
+    for(int i=0;i<deltas.Count;i++){
+      limSup = (MaxY - 0.01f) - currentY1;
+      limInf = (MinY + 0.01f) - currentY1;
+      deltas[i] = (float)clamp(deltas[i],limInf,limSup);
+      currentY1+=deltas[i];
+
+      limSup = (MaxY - 0.01f) - currentY2;
+      limInf = (MinY + 0.01f) - currentY2;
+      newPartner.deltas[i] = (float)clamp(deltas[i],limInf,limSup);      
+      currentY2+=newPartner.deltas[i];
     }
   }
 }

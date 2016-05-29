@@ -24,6 +24,8 @@ public class EvolutionState : MonoBehaviour {
   public float mutationProbability;
   public float crossoverProbability;
 
+  public bool gaussian;
+  
   private List<Individual> population;
   private SelectionMethod selection;
 
@@ -31,11 +33,13 @@ public class EvolutionState : MonoBehaviour {
   private int currentGeneration;
   public int EvaluationsPerStep;
 
-  private StatisticsLogger stats;
   public string statsFilename;
-
+  private StatisticsLogger stats  = new StatisticsLogger ();
+  
+  
+  
   private PolygonGenerator drawer;
-
+  
   public int unchangedNumber;
 
   bool evolving;
@@ -61,17 +65,21 @@ public class EvolutionState : MonoBehaviour {
       selection = new RouletteSelection ();
     }
     
-    stats = new StatisticsLogger (statsFilename);
     
     drawer = new PolygonGenerator ();
 
+    StartTest();
+  }
+
+  void StartTest(){
+    stats.bestFitness.Clear();
+    stats.meanFitness.Clear();
     InitPopulation ();
     evaluatedIndividuals = 0;
     currentGeneration = 0;
     evolving = true;
     drawing = false;
   }
-
 
   void FixedUpdate () {
     if (evolving) {
@@ -86,8 +94,24 @@ public class EvolutionState : MonoBehaviour {
       
 
       if (actual != testTimes-1) {
-			actual++;
-			Start ();
+	actual++;
+	StartTest ();
+      }
+      else{
+	string header = "StartPoint = (" + startPointX + ", " + startPointY + ")\n";
+	header += "EndPoint = (" + endPointX + ", " + endPointY + ")\n";
+	header += "N Points = " + numTrackPoints + "\n";
+	header += "Selection = " + ((selectionMethod == 0)?"Tournament":"Roulette") + "\n";
+	header += "Tournament Size = " + tournamentSize + "\n";
+	header += "NCrossings = " + nCrossings + "\n";
+	header += "NGenerations = " + numGenerations + "\n";
+	header += "PopulationSize = " + populationSize + "\n";
+	header += "MutationProb = " + mutationProbability + "\n";
+	header += "CrossoverProb = " + crossoverProbability + "\n";
+	header += "MutationType = " + ((gaussian)?"Gaussian":"Random") + "\n";
+	header += "Elistic = " + unchangedNumber + "\n\n";
+
+	stats.writeStats(header, testTimes);
       }
     }
   }
@@ -112,6 +136,7 @@ public class EvolutionState : MonoBehaviour {
       }
       
     } else {
+      
       stats.finalLog();
       evolving=false;
       drawing = true;
@@ -155,12 +180,12 @@ public class EvolutionState : MonoBehaviour {
       //apply crossover between pairs of individuals and mutation to each one
       while(selectedInds.Count>1) {
 	selectedInds[0].Crossover(selectedInds[1],crossoverProbability, nCrossings);
-	selectedInds[0].Mutate(mutationProbability);
-	selectedInds[1].Mutate(mutationProbability);
+	selectedInds[0].Mutate(mutationProbability,gaussian);
+	selectedInds[1].Mutate(mutationProbability,gaussian);
 	selectedInds.RemoveRange(0,2);
       }
       if(selectedInds.Count==1) {
-	selectedInds[0].Mutate(mutationProbability);
+	selectedInds[0].Mutate(mutationProbability,gaussian);
 	selectedInds.RemoveAt(0);
       }
     }
