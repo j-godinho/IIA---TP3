@@ -13,11 +13,9 @@ public class ExampleIndividual : Individual {
 
 
   public ExampleIndividual(ProblemInfo info) : base(info) {
-
     MinX = info.startPointX;
     MaxX = info.endPointX;
     MaxY = info.startPointY > info.endPointY ? info.startPointY : info.endPointY;
-
     MinY = MaxY - 2 * (Mathf.Abs (info.startPointY - info.endPointY));
   }
 
@@ -100,8 +98,7 @@ public class ExampleIndividual : Individual {
 
 
       if(UnityEngine.Random.Range (0f, 1f) < probability) {
-	mean = (MinY + MaxY) /2;
-	float tempValue = (float)gaussianMutation(mean, stddev);
+	float tempValue = (float)gaussianMutation(trackPoints[x], stddev);
 	float finalValue = (float)clamp(tempValue);
 	trackPoints[x] = finalValue;
       }

@@ -37,6 +37,7 @@ public class StatisticsLogger {
       allBestsFitness[currentGen] += bestFitness[currentGen];
       allMeansFitness[currentGen] += meanFitness[currentGen];
     }
+    Debug.Log ("generation: "+currentGen+"\tbest: " + bestFitness [currentGen] + "\tmean: " + meanFitness [currentGen]+"\n");
   }
 
   //writes to file
