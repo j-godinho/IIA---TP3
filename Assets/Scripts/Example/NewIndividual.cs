@@ -24,6 +24,8 @@ public class NewIndividual : Individual {
   }
 
   public override void Initialize() {
+    this.deltas.Clear();
+    trackPoints.Clear();
     RandomInitialization();
   }
 
@@ -46,7 +48,6 @@ public class NewIndividual : Individual {
     float step = (info.endPointX - info.startPointX) / (info.numTrackPoints - 1);
     trackPoints.Add(info.startPointX, info.startPointY);
     float lastPointX = info.startPointX;
-    Debug.Log(deltas[deltas.Count-1]);
     for(int i=0;i<deltas.Count;i++){
       trackPoints.Add(info.startPointX + (i+1)*step, trackPoints[lastPointX] + deltas[i]);
       lastPointX = info.startPointX + (i+1)*step;

@@ -37,7 +37,6 @@ public class ExampleIndividual : Individual {
     } else {
       HalfCrossover (partner, probability);
     }
-
   }
 
   public override void CalcTrackPoints() {

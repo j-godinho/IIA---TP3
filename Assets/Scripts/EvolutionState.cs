@@ -79,9 +79,10 @@ public class EvolutionState : MonoBehaviour {
     } else if(drawing) {
       for(int i=0;i<population.Count;i++) population[i].evaluate();
       population.Sort((x, y) => x.fitness.CompareTo(y.fitness));
+      DestroyObject(GameObject.Find("New Game Object"));
       drawer.drawCurve(population[0].trackPoints,info);
       drawing=false;
-      Application.CaptureScreenshot ("Images/Program"+actual+".png");
+      Application.CaptureScreenshot ("Images/Program"+population[0].fitness+".png");
       
 
       if (actual != testTimes-1) {
@@ -153,7 +154,7 @@ public class EvolutionState : MonoBehaviour {
 
       //apply crossover between pairs of individuals and mutation to each one
       while(selectedInds.Count>1) {
-	//selectedInds[0].Crossover(selectedInds[1],crossoverProbability, nCrossings);
+	selectedInds[0].Crossover(selectedInds[1],crossoverProbability, nCrossings);
 	selectedInds[0].Mutate(mutationProbability);
 	selectedInds[1].Mutate(mutationProbability);
 	selectedInds.RemoveRange(0,2);

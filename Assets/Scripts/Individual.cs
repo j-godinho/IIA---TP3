@@ -30,9 +30,11 @@ public abstract class Individual {
   public void evaluate() {
     CalcTrackPoints ();
     eval = problem.evaluate (trackPoints);
-    if(double.IsInfinity(eval.time)){
-      PolygonGenerator drawer = new PolygonGenerator ();
-      drawer.drawCurve(trackPoints,info);
+    while(double.IsInfinity(eval.time)){
+      trackPoints.Clear();
+      Initialize();
+      CalcTrackPoints ();
+      eval = problem.evaluate(trackPoints);
     }
     CalcFitness ();
   }
