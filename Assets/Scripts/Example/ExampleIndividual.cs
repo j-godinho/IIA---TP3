@@ -35,8 +35,7 @@ public class ExampleIndividual : Individual {
     if (n != 0) {
       NCrossover (partner, probability, n);
     } else {
-      //HalfCrossover (partner, probability);
-		NCrossover (partner, 0f, n);
+      HalfCrossover (partner, probability);
     }
 
   }
