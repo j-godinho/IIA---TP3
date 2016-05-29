@@ -85,8 +85,8 @@ public class EvolutionState : MonoBehaviour {
       
 
       if (actual != testTimes-1) {
-	actual++;
-	Start ();
+			actual++;
+			Start ();
       }
     }
   }
