@@ -34,7 +34,8 @@ public class EvolutionState : MonoBehaviour {
   public int EvaluationsPerStep;
 
   public string statsFilename;
-  private StatisticsLogger stats  = new StatisticsLogger ();
+
+  private StatisticsLogger stats;
 
 
 
@@ -60,6 +61,8 @@ public class EvolutionState : MonoBehaviour {
     info.g = g;
     info.startVelocity = startVelocity;
     info.numTrackPoints = numTrackPoints;
+
+    stats  = new StatisticsLogger ();
 
     if (selectionMethod == 0) {
       selection = new TournamentSelection (tournamentSize);

@@ -47,6 +47,7 @@ public class NewIndividual : Individual {
   }
   
   public override void CalcTrackPoints() {
+    trackPoints.Clear();
     float step = (info.endPointX - info.startPointX) / (info.numTrackPoints - 1);
     trackPoints.Add(info.startPointX, info.startPointY);
     float lastPointX = info.startPointX;
@@ -187,7 +188,7 @@ public class NewIndividual : Individual {
 
     float currentY1 = info.startPointY;
     float currentY2 = info.startPointY;
-    
+    List<float> test = new List<float>(deltas);
     for (int j = 0; j < points.Count; j++)
       {
 	int limit = (j == points.Count-1)?cutPoints-1:points[j+1];
@@ -203,6 +204,7 @@ public class NewIndividual : Individual {
     float limInf;
 
     for(int i=0;i<deltas.Count;i++){
+      
       limSup = (MaxY - 0.01f) - currentY1;
       limInf = (MinY + 0.01f) - currentY1;
       deltas[i] = (float)clamp(deltas[i],limInf,limSup);
@@ -213,7 +215,6 @@ public class NewIndividual : Individual {
       newPartner.deltas[i] = (float)clamp(deltas[i],limInf,limSup);      
       currentY2+=newPartner.deltas[i];
     }
-    
   }
   
   void HalfCrossover(Individual partner, float probability) {
