@@ -15,7 +15,7 @@ public class EvolutionState : MonoBehaviour {
   public int tournamentSize;
   public int nCrossings;
   public int stddev;
-  
+
   private ProblemInfo info;
 
 
@@ -25,7 +25,7 @@ public class EvolutionState : MonoBehaviour {
   public float crossoverProbability;
 
   public bool gaussian;
-  
+
   private List<Individual> population;
   private SelectionMethod selection;
 
@@ -35,12 +35,14 @@ public class EvolutionState : MonoBehaviour {
 
   public string statsFilename;
   private StatisticsLogger stats  = new StatisticsLogger ();
-  
-  
-  
+
+
+
   private PolygonGenerator drawer;
-  
+
   public int unchangedNumber;
+
+  public int typeOfRepresentation; //0 - normal one; 1- Delta one;
 
   bool evolving;
   bool drawing;
@@ -64,8 +66,8 @@ public class EvolutionState : MonoBehaviour {
     } else if (selectionMethod == 1) {
       selection = new RouletteSelection ();
     }
-    
-    
+
+
     drawer = new PolygonGenerator ();
 
     StartTest();
@@ -91,7 +93,7 @@ public class EvolutionState : MonoBehaviour {
       drawer.drawCurve(population[0].trackPoints,info);
       drawing=false;
       Application.CaptureScreenshot ("Images/Program"+population[0].fitness+".png");
-      
+
 
       if (actual != testTimes-1) {
 	actual++;
@@ -134,37 +136,44 @@ public class EvolutionState : MonoBehaviour {
 	evaluatedIndividuals=0;
 	currentGeneration++;
       }
-      
+
     } else {
-      
+
       stats.finalLog();
       evolving=false;
       drawing = true;
       print ("evolution stopped");
     }
-    
+
   }
 
 
   void InitPopulation () {
     population = new List<Individual>();
     while (population.Count<populationSize) {
-      NewIndividual newind = new NewIndividual(info); //change accordingly
-      newind.Initialize();
-      population.Add (newind);
+      if(typeOfRepresentation == 0){
+        ExampleIndividual newind = new ExampleIndividual(info); //change accordingly
+        newind.Initialize();
+        population.Add (newind);
+      }else if(typeOfRepresentation == 1){
+        NewIndividual newind = new NewIndividual(info); //change accordingly
+        newind.Initialize();
+        population.Add (newind);
+      }
+
     }
   }
-  
-  
+
+
   List<Individual> BreedPopulation() {
     List<Individual> newpop = new List<Individual>();
-    
+
     population.Sort((x, y) => x.fitness.CompareTo(y.fitness));
     for(int i = 0; i < unchangedNumber; i++){
       newpop.Add(population[i].Clone());
     }
-    
-    
+
+
     //breed individuals and place them on new population. We'll apply crossover and mutation later
     while(newpop.Count<populationSize) {
       List<Individual> selectedInds = selection.selectIndividuals(population,2); //we should propably always select pairs of individuals

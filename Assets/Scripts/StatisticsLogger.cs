@@ -37,6 +37,7 @@ public class StatisticsLogger {
       allBestsFitness[currentGen] += bestFitness[currentGen];
       allMeansFitness[currentGen] += meanFitness[currentGen];
     }
+    Debug.Log ("generation: "+currentGen+"\tbest: " + bestFitness [currentGen] + "\tmean: " + meanFitness [currentGen]+"\n");
   }
 
   //writes to file
@@ -48,21 +49,21 @@ public class StatisticsLogger {
       values += (i+" "+bestFitness[i]+" "+meanFitness[i] + "\n");
     }*/
   }
-  
+
   public void writeStats(string header, int n_tests){
     int n_gen = allBestsFitness.Count;
-    logger = File.CreateText ("Stats/stats" + (float)allBestsFitness[n_gen - 1]/n_tests);	  
-	
+    logger = File.CreateText ("Stats/stats" + (float)allBestsFitness[n_gen - 1]/n_tests);
+
     logger.WriteLine(header);
 
     for (int i=0; i<n_gen; i++) {
       values += (i+" "+(float)allBestsFitness[i]/n_tests+" "+(float)allMeansFitness[i]/n_tests + "\n");
     }
-    
+
     logger.WriteLine("Best Result(mean): " + (float)allBestsFitness[n_gen -1]/n_tests + "\n");
-    
+
     logger.WriteLine(values);
-	  
+
     logger.Close ();
 
   }

@@ -62,7 +62,7 @@ public class ExampleIndividual : Individual {
   void RandomInitialization() {
     float step = (info.endPointX - info.startPointX ) / (info.numTrackPoints - 1);
     float y = 0;
-    
+
     trackPoints.Add (info.startPointX, info.startPointY);//startpoint
     for(int i = 1; i < info.numTrackPoints - 1; i++) {
       y = UnityEngine.Random.Range(MinY, MaxY);
@@ -70,7 +70,7 @@ public class ExampleIndividual : Individual {
     }
     trackPoints.Add (info.endPointX, info.endPointY); //endpoint
   }
-  
+
   void NewValueMutation(float probability) {
     List<float> keys = new List<float>(trackPoints.Keys);
     foreach (float x in keys) {
@@ -145,11 +145,11 @@ public class ExampleIndividual : Individual {
 
 
   void NCrossover(Individual partner, float probability,int cutPoints) {
-    
+
     if (UnityEngine.Random.Range (0f, 1f) > probability) {
       return;
     }
-    
+
     List<int> points = new List<int>();
 
     int found = 0;
@@ -158,16 +158,16 @@ public class ExampleIndividual : Individual {
     while(points.Count != cutPoints)
       {
 	aux = UnityEngine.Random.Range(0, info.numTrackPoints);
-	
+
 	if (!points.Contains(aux))
 	  {
 	    points.Add(aux);
 	  }
       }
-    
+
     points.Sort ();
-    
-    
+
+
     List<float> keys = new List<float>(trackPoints.Keys);
     for (int j = 0; j < points.Count; j++)
       {
